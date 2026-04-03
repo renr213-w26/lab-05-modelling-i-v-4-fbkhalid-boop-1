@@ -25,6 +25,17 @@ Additionally, if you’re using functions that are not introduced in the course 
 Failure to cite outside resources used, including Large Language Models like Chat GPT, is a violation of the Duke Community Standard and will be treated as such.
 :::
 
+```{r}
+#| label: setup
+#| message: false
+#| warning: false
+
+library(tidyverse)
+library(tidymodels)
+library(openintro)
+library(gapminder)
+```
+
 # Part 1 - Smoking during pregnancy
 
 ## Question 1
@@ -33,7 +44,25 @@ We are interested in the impact of smoking during pregnancy. Since it is not pos
 
 a.  Create a version of the `births14` data set dropping observations where there are `NA`s for `habit`. You can call this version `births14_habitgiven`.
 
+```{r}
+births14_habitgiven <- births14 |> 
+  drop_na(habit)
+```
+
+
 b.  Plotting the data is a useful first step because it helps us quickly visualize trends, identify strong associations, and develop research questions. Create an appropriate plot displaying the relationship between `weight` and `habit`. In 2-3 sentences, discuss the relationships observed.
+
+```{r}
+
+ggplot(births14_habitgiven, aes(x = habit, y = weight, fill = habit)) +
+  geom_boxplot(alpha = 0.7, show.legend = FALSE) +
+  theme_minimal() +
+  labs(
+    title = "Baby Weights by Mother's Smoking Habit",
+    x = "Smoking Habit",
+    y = "Baby Weight (lbs)"
+  )
+```
 
 c.  Now, fit a linear model that predicts `weight` from `habit`. Provide the tidy summary output below.
 
