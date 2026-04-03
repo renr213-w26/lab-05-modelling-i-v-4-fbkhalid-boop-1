@@ -206,8 +206,24 @@ Important
 </div>
 </div>
 </div>
+<p>Based on the boxplot, mothers who are nonsmokers tend to have babies with a slightly higher median weight compared to mothers who smoke. Both distributions appear to have a similar spread and include a few outliers on the lower end (babies with lower birth weights), but the overall distribution for nonsmokers is slightly higher.</p>
 <ol start="3" type="a">
-<li><p>Now, fit a linear model that predicts <code>weight</code> from <code>habit</code>. Provide the tidy summary output below.</p></li>
+<li>Now, fit a linear model that predicts <code>weight</code> from <code>habit</code>. Provide the tidy summary output below.</li>
+</ol>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>weight_habit_fit <span class="ot">&lt;-</span> <span class="fu">linear_reg</span>() <span class="sc">|&gt;</span> </span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">fit</span>(weight <span class="sc">~</span> habit, <span class="at">data =</span> births14_habitgiven)</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="fu">tidy</span>(weight_habit_fit)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 2 × 5
+  term        estimate std.error statistic    p.value
+  &lt;chr&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;      &lt;dbl&gt;
+1 (Intercept)    7.27     0.0435    167.   0         
+2 habitsmoker   -0.593    0.128      -4.65 0.00000382</code></pre>
+</div>
+</div>
+<ol start="4" type="a">
 <li><p>Write the estimated least squares regression line below using proper notation.</p>
 <div class="callout callout-style-default callout-tip callout-titled">
 <div class="callout-header d-flex align-content-center">
@@ -221,7 +237,8 @@ Tip
 <div class="callout-body-container callout-body">
 <p>If you need to type an equation using proper notation, type your answers in-between <code>$$</code> and <code>$$</code>. You may use <code>\hat{example}</code> to put a hat on a character.</p>
 </div>
-</div></li>
+</div>
+<p><span class="math display">\[ \widehat{weight} = 7.2698731 + -0.5926801 \times smoker \]</span> Smoker equals 1 if mother smokes, 0 if not</p></li>
 </ol>
 </section>
 <section id="question-2" class="level2">

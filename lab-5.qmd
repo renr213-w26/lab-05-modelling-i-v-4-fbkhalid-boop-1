@@ -64,13 +64,24 @@ ggplot(births14_habitgiven, aes(x = habit, y = weight, fill = habit)) +
   )
 ```
 
+Based on the boxplot, mothers who are nonsmokers tend to have babies with a slightly higher median weight compared to mothers who smoke. Both distributions appear to have a similar spread and include a few outliers on the lower end (babies with lower birth weights), but the overall distribution for nonsmokers is slightly higher.
+
 c.  Now, fit a linear model that predicts `weight` from `habit`. Provide the tidy summary output below.
+
+```{r}
+weight_habit_fit <- linear_reg() |> 
+  fit(weight ~ habit, data = births14_habitgiven)
+
+tidy(weight_habit_fit)
+```
 
 d.  Write the estimated least squares regression line below using proper notation.
 
     ::: callout-tip
     If you need to type an equation using proper notation, type your answers in-between `$$` and `$$`. You may use `\hat{example}` to put a hat on a character.
     :::
+$$ \widehat{weight} = 7.2698731 + -0.5926801 \times smoker $$
+Smoker equals 1 if mother smokes, 0 if not
 
 ## Question 2
 
