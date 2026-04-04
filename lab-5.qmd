@@ -25,6 +25,17 @@ Additionally, if you’re using functions that are not introduced in the course 
 Failure to cite outside resources used, including Large Language Models like Chat GPT, is a violation of the Duke Community Standard and will be treated as such.
 :::
 
+```{r}
+#| label: setup
+#| message: false
+#| warning: false
+
+library(tidyverse)
+library(tidymodels)
+library(openintro)
+library(gapminder)
+```
+
 # Part 1 - Smoking during pregnancy
 
 ## Question 1
@@ -33,25 +44,67 @@ We are interested in the impact of smoking during pregnancy. Since it is not pos
 
 a.  Create a version of the `births14` data set dropping observations where there are `NA`s for `habit`. You can call this version `births14_habitgiven`.
 
+```{r}
+births14_habitgiven <- births14 |> 
+  drop_na(habit)
+```
+
+
 b.  Plotting the data is a useful first step because it helps us quickly visualize trends, identify strong associations, and develop research questions. Create an appropriate plot displaying the relationship between `weight` and `habit`. In 2-3 sentences, discuss the relationships observed.
 
+```{r}
+
+ggplot(births14_habitgiven, aes(x = habit, y = weight, fill = habit)) +
+  geom_boxplot(alpha = 0.7, show.legend = FALSE) +
+  theme_minimal() +
+  labs(
+    title = "Baby Weights by Mother's Smoking Habit",
+    x = "Smoking Habit",
+    y = "Baby Weight (lbs)"
+  )
+```
+
+Based on the boxplot, mothers who are nonsmokers tend to have babies with a slightly higher median weight compared to mothers who smoke. Both distributions appear to have a similar spread and include a few outliers on the lower end (babies with lower birth weights), but the overall distribution for nonsmokers is slightly higher.
+
 c.  Now, fit a linear model that predicts `weight` from `habit`. Provide the tidy summary output below.
+
+```{r}
+weight_habit_fit <- linear_reg() |> 
+  fit(weight ~ habit, data = births14_habitgiven)
+
+tidy(weight_habit_fit)
+```
 
 d.  Write the estimated least squares regression line below using proper notation.
 
     ::: callout-tip
     If you need to type an equation using proper notation, type your answers in-between `$$` and `$$`. You may use `\hat{example}` to put a hat on a character.
     :::
+$$ \widehat{weight} = 7.2698731 + -0.5926801 \times smoker $$
+Smoker equals 1 if mother smokes, 0 if not
 
 ## Question 2
 
 a.  Another researcher is interested in assessing the relationship between babies’ weights and mothers’ ages. Fit another linear model to investigate this relationship. Provide the summary output below.
 
+```{r}
+weight_mage_fit <- linear_reg() |> 
+  fit(weight ~ mage, data = births14)
+
+tidy(weight_mage_fit)
+```
+
 b.  In 2-3 sentences, explain how the regression line to model these data is fit, i.e., based on what criteria R determines the regression line.
+
+R determines the regression line using least squares regression. This method fits the line by minimizing the sum of the squared residuals, meaning it finds the line that makes the total squared vertical distances between the observed data points and the predicted values on the line as small as possible.
 
 c.  Interpret the intercept in the context of the data and the research question. Is the intercept meaningful in this context? Why or why not?
 
+The intercept is saying that for a mother who is 0 years old, we would expect her baby's weight to be 6.7929667 pounds on average. This intercept is not meaningful in this context because a mother cannot be 0 years old.
+
 d.  Interpret the slope in the context of the data and the research question.
+
+For each additional year older a mother is, we expect her baby's weight to increase by 0.0142428 pounds, on average. So a slight positive correlation between a mothers age and baby weight at birth.
 
 # Part 2 - Parasites
 
@@ -83,23 +136,64 @@ Let’s start by reading in the `parasites` data and examining the relationship 
 
 a.  Load the data and save the data frame as `parasites`.
 
+```{r}
+parasites <- read_csv("data/parasites.csv")
+```
+
 b.  Based on the goals of the analysis, what is the response variable?
 
+The response variable is parsim, which is the measure of parasite similarity (the proportion of parasites shared between species).
+
 c.  Visualize the relationship between the two variables.
+```{r}
+ggplot(parasites, aes(x = divergence_time, y = parsim)) +
+  geom_point(alpha = 0.6) +
+  theme_minimal() +
+  labs(
+    title = "Parasite Similarity vs. Evolutionary Divergence Time",
+    x = "Divergence Time (Millions of Years)",
+    y = "Parasite Similarity (Proportion)"
+  )
+```
 
 d.  Use the visualization to describe the relationship between the two variables.
+
+There is a negative, non-linear relationship between divergence time and parasite similarity. As divergence time increases, the proportion of shared parasites quickly drops and eventually approaches zero. Most of the data is clustered at lower divergence times, making the relationship appear L-shaped or heavily skewed.
 
 ## Question 4
 
 Next, model this relationship.
 
 a.  Fit the model and write the estimated regression equation.
+```{r}
+dt_fit <- linear_reg() |> 
+  fit(parsim ~ divergence_time, data = parasites)
 
+tidy(dt_fit)
+```
+$$ \widehat{parsim} = 0.379486678 + -0.006531791 \times divergence\_time $$
 b.  Interpret the slope and the intercept in the context of the data.
+
+Two species that diverged 0 million years ago (meaning they are exactly the same species) are expected to share a proportion of 0.379486678 of their parasites, on average.
+Slope: For each additional million years of divergence time between two species, we expect their parasite similarity to decrease by -0.006531791, on average.
 
 c.  Recreate the visualization from Question 3, this time adding a regression line to the visualization.
 
+```{r}
+ggplot(parasites, aes(x = divergence_time, y = parsim)) +
+  geom_point(alpha = 0.6) +
+  geom_smooth(method = "lm", se = FALSE, color = "blue") +
+  theme_minimal() +
+  labs(
+    title = "Parasite Similarity vs. Divergence Time with Linear Model",
+    x = "Divergence Time (Millions of Years)",
+    y = "Parasite Similarity (Proportion)"
+  )
+```
+
 d.  What do you notice about the prediction (regression) line that may be strange, particularly for very large divergence times?
+
+Because it is a straight line applied to a curved relationship, the regression line will eventually drop below zero on the y-axis for very large divergence times. Predicting a negative proportion of parasite similarity is impossible (it doesn't make sense for the porportion to be negative), as parsim is strictly bounded between 0 and 1.
 
 ## Question 5
 
@@ -110,10 +204,27 @@ a.  Using mutate, create a new variable `transformed_parsim` that is calculated 
     ::: callout-note
     `log()` in R represents the **nautral log**.
     :::
+```{r}
+parasites <- parasites |> 
+  mutate(transformed_parsim = log(parsim / (1 - parsim)))
+```
 
 b.  Then, visualize the relationship between divergence_time and `transformed_parsim`. Add a regression line to your visualization.
+```{r}
+ggplot(parasites, aes(x = divergence_time, y = transformed_parsim)) +
+  geom_point(alpha = 0.6) +
+  geom_smooth(method = "lm", se = FALSE, color = "purple") +
+  theme_minimal() +
+  labs(
+    title = "Transformed Parasite Similarity vs. Divergence Time",
+    x = "Divergence Time (Millions of Years)",
+    y = "Transformed Parasite Similarity (Log-Odds)"
+  )
+```
 
 c.  Write a 1-2 sentence description of what you observe in the visualization.
+
+By transforming the response variable, the relationship now appears much more linear and spread out along the y-axis. The linear regression line fits the data significantly better, and because it is modeling log-odds, predictions are no longer constrained by the 0 and 1 boundaries.
 
 ## Question 6
 
@@ -128,10 +239,29 @@ To answer this question, begin by fitting a linear regression model to each pair
 -   `BMdiff` and `transformed_parsim`
 
 -   `precdiff` and `transformed_parsim`
+```{r}
+dt_model <- linear_reg() |> fit(transformed_parsim ~ divergence_time, data = parasites)
+dist_model <- linear_reg() |> fit(transformed_parsim ~ distance, data = parasites)
+BM_model <- linear_reg() |> fit(transformed_parsim ~ BMdiff, data = parasites)
+prec_model <- linear_reg() |> fit(transformed_parsim ~ precdiff, data = parasites)
+```
 
 a.  Report the slopes for each of these models. Use proper notation.
+```{r}
+tidy(dt_model)
+tidy(dist_model)
+tidy(BM_model)
+tidy(prec_model)
+```
+
+Slope for divergence_time: -0.09066296
+Slope for distance: -0.0002739886	
+Slope for BMdiff: -5.044374e-06
+Slope for precdiff: -0.006012838
 
 b.  To answer the question of interest, would it be useful to compare the slopes in each model to choose the variable that is the strongest predictor of parasite similarity? Why or why not?
+
+No, it is not useful to compare the raw slopes. The explanatory variables are all measured in completely different units and scales (e.g., millions of years, kilometers, grams, millimeters). A 1-unit change in divergence time represents a massive evolutionary shift, whereas a 1-unit change in distance is just a single kilometer. So, the slope magnitudes are not directly comparable.
 
 ## Question 7
 
