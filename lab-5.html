@@ -404,9 +404,39 @@ Note
 <p><code>log()</code> in R represents the <strong>nautral log</strong>.</p>
 </div>
 </div></li>
-<li><p>Then, visualize the relationship between divergence_time and <code>transformed_parsim</code>. Add a regression line to your visualization.</p></li>
-<li><p>Write a 1-2 sentence description of what you observe in the visualization.</p></li>
 </ol>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>parasites <span class="ot">&lt;-</span> parasites <span class="sc">|&gt;</span> </span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">transformed_parsim =</span> <span class="fu">log</span>(parsim <span class="sc">/</span> (<span class="dv">1</span> <span class="sc">-</span> parsim)))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<ol start="2" type="a">
+<li>Then, visualize the relationship between divergence_time and <code>transformed_parsim</code>. Add a regression line to your visualization.</li>
+</ol>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(parasites, <span class="fu">aes</span>(<span class="at">x =</span> divergence_time, <span class="at">y =</span> transformed_parsim)) <span class="sc">+</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">alpha =</span> <span class="fl">0.6</span>) <span class="sc">+</span></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">method =</span> <span class="st">"lm"</span>, <span class="at">se =</span> <span class="cn">FALSE</span>, <span class="at">color =</span> <span class="st">"purple"</span>) <span class="sc">+</span></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Transformed Parasite Similarity vs. Divergence Time"</span>,</span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Divergence Time (Millions of Years)"</span>,</span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Transformed Parasite Similarity (Log-Odds)"</span></span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>`geom_smooth()` using formula = 'y ~ x'</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="lab-5_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<ol start="3" type="a">
+<li>Write a 1-2 sentence description of what you observe in the visualization.</li>
+</ol>
+<p>By transforming the response variable, the relationship now appears much more linear and spread out along the y-axis. The linear regression line fits the data significantly better, and because it is modeling log-odds, predictions are no longer constrained by the 0 and 1 boundaries.</p>
 </section>
 <section id="question-6" class="level2">
 <h2 class="anchored" data-anchor-id="question-6">Question 6</h2>
@@ -418,10 +448,55 @@ Note
 <li><p><code>BMdiff</code> and <code>transformed_parsim</code></p></li>
 <li><p><code>precdiff</code> and <code>transformed_parsim</code></p></li>
 </ul>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>dt_model <span class="ot">&lt;-</span> <span class="fu">linear_reg</span>() <span class="sc">|&gt;</span> <span class="fu">fit</span>(transformed_parsim <span class="sc">~</span> divergence_time, <span class="at">data =</span> parasites)</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>dist_model <span class="ot">&lt;-</span> <span class="fu">linear_reg</span>() <span class="sc">|&gt;</span> <span class="fu">fit</span>(transformed_parsim <span class="sc">~</span> distance, <span class="at">data =</span> parasites)</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>BM_model <span class="ot">&lt;-</span> <span class="fu">linear_reg</span>() <span class="sc">|&gt;</span> <span class="fu">fit</span>(transformed_parsim <span class="sc">~</span> BMdiff, <span class="at">data =</span> parasites)</span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>prec_model <span class="ot">&lt;-</span> <span class="fu">linear_reg</span>() <span class="sc">|&gt;</span> <span class="fu">fit</span>(transformed_parsim <span class="sc">~</span> precdiff, <span class="at">data =</span> parasites)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
 <ol type="a">
-<li><p>Report the slopes for each of these models. Use proper notation.</p></li>
-<li><p>To answer the question of interest, would it be useful to compare the slopes in each model to choose the variable that is the strongest predictor of parasite similarity? Why or why not?</p></li>
+<li>Report the slopes for each of these models. Use proper notation.</li>
 </ol>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">tidy</span>(dt_model)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 2 × 5
+  term            estimate std.error statistic  p.value
+  &lt;chr&gt;              &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
+1 (Intercept)       0.368    0.141        2.62 9.12e- 3
+2 divergence_time  -0.0907   0.00363    -25.0  1.38e-94</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">tidy</span>(dist_model)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 2 × 5
+  term         estimate std.error statistic  p.value
+  &lt;chr&gt;           &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
+1 (Intercept) -0.553    0.123         -4.51 7.71e- 6
+2 distance    -0.000274 0.0000126    -21.7  1.95e-77</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">tidy</span>(BM_model)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 2 × 5
+  term           estimate  std.error statistic  p.value
+  &lt;chr&gt;             &lt;dbl&gt;      &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
+1 (Intercept) -2.70       0.106         -25.5  2.24e-97
+2 BMdiff      -0.00000504 0.00000362     -1.39 1.64e- 1</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="fu">tidy</span>(prec_model)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 2 × 5
+  term        estimate std.error statistic  p.value
+  &lt;chr&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
+1 (Intercept) -2.53      0.139      -18.2  2.82e-59
+2 precdiff    -0.00601   0.00265     -2.27 2.36e- 2</code></pre>
+</div>
+</div>
+<p>Slope for divergence_time: -0.09066296 Slope for distance: -0.0002739886<br>
+Slope for BMdiff: -5.044374e-06 Slope for precdiff: -0.006012838</p>
+<ol start="2" type="a">
+<li>To answer the question of interest, would it be useful to compare the slopes in each model to choose the variable that is the strongest predictor of parasite similarity? Why or why not?</li>
+</ol>
+<p>No, it is not useful to compare the raw slopes. The explanatory variables are all measured in completely different units and scales (e.g., millions of years, kilometers, grams, millimeters). A 1-unit change in divergence time represents a massive evolutionary shift, whereas a 1-unit change in distance is just a single kilometer. So, the slope magnitudes are not directly comparable.</p>
 </section>
 <section id="question-7" class="level2">
 <h2 class="anchored" data-anchor-id="question-7">Question 7</h2>

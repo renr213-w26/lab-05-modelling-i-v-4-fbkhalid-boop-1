@@ -210,8 +210,21 @@ parasites <- parasites |>
 ```
 
 b.  Then, visualize the relationship between divergence_time and `transformed_parsim`. Add a regression line to your visualization.
+```{r}
+ggplot(parasites, aes(x = divergence_time, y = transformed_parsim)) +
+  geom_point(alpha = 0.6) +
+  geom_smooth(method = "lm", se = FALSE, color = "purple") +
+  theme_minimal() +
+  labs(
+    title = "Transformed Parasite Similarity vs. Divergence Time",
+    x = "Divergence Time (Millions of Years)",
+    y = "Transformed Parasite Similarity (Log-Odds)"
+  )
+```
 
 c.  Write a 1-2 sentence description of what you observe in the visualization.
+
+By transforming the response variable, the relationship now appears much more linear and spread out along the y-axis. The linear regression line fits the data significantly better, and because it is modeling log-odds, predictions are no longer constrained by the 0 and 1 boundaries.
 
 ## Question 6
 
@@ -226,10 +239,29 @@ To answer this question, begin by fitting a linear regression model to each pair
 -   `BMdiff` and `transformed_parsim`
 
 -   `precdiff` and `transformed_parsim`
+```{r}
+dt_model <- linear_reg() |> fit(transformed_parsim ~ divergence_time, data = parasites)
+dist_model <- linear_reg() |> fit(transformed_parsim ~ distance, data = parasites)
+BM_model <- linear_reg() |> fit(transformed_parsim ~ BMdiff, data = parasites)
+prec_model <- linear_reg() |> fit(transformed_parsim ~ precdiff, data = parasites)
+```
 
 a.  Report the slopes for each of these models. Use proper notation.
+```{r}
+tidy(dt_model)
+tidy(dist_model)
+tidy(BM_model)
+tidy(prec_model)
+```
+
+Slope for divergence_time: -0.09066296
+Slope for distance: -0.0002739886	
+Slope for BMdiff: -5.044374e-06
+Slope for precdiff: -0.006012838
 
 b.  To answer the question of interest, would it be useful to compare the slopes in each model to choose the variable that is the strongest predictor of parasite similarity? Why or why not?
+
+No, it is not useful to compare the raw slopes. The explanatory variables are all measured in completely different units and scales (e.g., millions of years, kilometers, grams, millimeters). A 1-unit change in divergence time represents a massive evolutionary shift, whereas a 1-unit change in distance is just a single kilometer. So, the slope magnitudes are not directly comparable.
 
 ## Question 7
 
