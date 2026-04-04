@@ -340,11 +340,51 @@ dbl (5): divergence_time, distance, BMdiff, precdiff, parsim
 <h2 class="anchored" data-anchor-id="question-4">Question 4</h2>
 <p>Next, model this relationship.</p>
 <ol type="a">
-<li><p>Fit the model and write the estimated regression equation.</p></li>
-<li><p>Interpret the slope and the intercept in the context of the data.</p></li>
-<li><p>Recreate the visualization from Question 3, this time adding a regression line to the visualization.</p></li>
-<li><p>What do you notice about the prediction (regression) line that may be strange, particularly for very large divergence times?</p></li>
+<li>Fit the model and write the estimated regression equation.</li>
 </ol>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>dt_fit <span class="ot">&lt;-</span> <span class="fu">linear_reg</span>() <span class="sc">|&gt;</span> </span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">fit</span>(parsim <span class="sc">~</span> divergence_time, <span class="at">data =</span> parasites)</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="fu">tidy</span>(dt_fit)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 2 × 5
+  term            estimate std.error statistic   p.value
+  &lt;chr&gt;              &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;
+1 (Intercept)      0.379    0.0121        31.4 4.59e-128
+2 divergence_time -0.00653  0.000312     -20.9 2.70e- 73</code></pre>
+</div>
+</div>
+<p><span class="math display">\[ \widehat{parsim} = 0.379486678 + -0.006531791 \times divergence\_time \]</span> b. Interpret the slope and the intercept in the context of the data.</p>
+<p>Two species that diverged 0 million years ago (meaning they are exactly the same species) are expected to share a proportion of 0.379486678 of their parasites, on average. Slope: For each additional million years of divergence time between two species, we expect their parasite similarity to decrease by -0.006531791, on average.</p>
+<ol start="3" type="a">
+<li>Recreate the visualization from Question 3, this time adding a regression line to the visualization.</li>
+</ol>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(parasites, <span class="fu">aes</span>(<span class="at">x =</span> divergence_time, <span class="at">y =</span> parsim)) <span class="sc">+</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">alpha =</span> <span class="fl">0.6</span>) <span class="sc">+</span></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">method =</span> <span class="st">"lm"</span>, <span class="at">se =</span> <span class="cn">FALSE</span>, <span class="at">color =</span> <span class="st">"blue"</span>) <span class="sc">+</span></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Parasite Similarity vs. Divergence Time with Linear Model"</span>,</span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Divergence Time (Millions of Years)"</span>,</span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Parasite Similarity (Proportion)"</span></span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>`geom_smooth()` using formula = 'y ~ x'</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="lab-5_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<ol start="4" type="a">
+<li>What do you notice about the prediction (regression) line that may be strange, particularly for very large divergence times?</li>
+</ol>
+<p>Because it is a straight line applied to a curved relationship, the regression line will eventually drop below zero on the y-axis for very large divergence times. Predicting a negative proportion of parasite similarity is impossible (it doesn’t make sense for the porportion to be negative), as parsim is strictly bounded between 0 and 1.</p>
 </section>
 <section id="question-5" class="level2">
 <h2 class="anchored" data-anchor-id="question-5">Question 5</h2>
